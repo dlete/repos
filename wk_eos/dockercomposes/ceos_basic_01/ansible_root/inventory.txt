@@ -1,0 +1,4 @@
+localhost ansible_connection=local
+
+ceos-01 ansible_host=ceos-1 #   ansible_connection=ssh ansible_user=cfm    ansible_ssh_pass=aladdin
+#ceos-01 ansible_host=172.18.0.4

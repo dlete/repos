@@ -1,0 +1,7 @@
+version: '3.8'
+
+services:
+  my_ans:
+    image: dl_image_02
+    command: bash
+    tty: true

@@ -1,0 +1,14 @@
+# topology documentation: http://containerlab.dev/lab-examples/srl-ceos/
+name: my_srlceos01
+
+topology:
+  nodes:
+    ceos1:
+      kind: ceos
+      image: arista/ceos:4.29.3M
+    ceos2:
+      kind: ceos
+      image: arista/ceos:4.29.3M
+
+  links:
+    - endpoints: ["ceos1:eth1", "ceos2:eth1"]

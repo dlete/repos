@@ -1,0 +1,126 @@
+# docker Dockerfile to build image with Ansible, running over alpine
+# sourced from, and the modified for own setup,
+# https://raw.githubusercontent.com/willhallonline/docker-ansible/mas\
+#ter/ansible-core/alpine316/Dockerfile
+
+# To execute it:
+# Build the image
+#docker build --tag <image_name:tag> --file <path_to_dockerfile_file> <PATH>
+#docker build --tag dlete/ansible/core:2.15.0 --file dl_alpine-3.17_ansible_core-2.15.0 .
+#
+# Verify creation by listing the images
+#docker images
+#
+# Create and run a container
+# detached mode
+#docker run --detach -it --name <container_name> <image_name> bash
+# detach and remove the container once it exits
+#docker run --interactive --tty --rm --detach \
+# --name <container_name> <image_name> bash
+# attach to running container, and run the Bash shell on it
+# docker exec -it <container_name> bash
+# docker exec --interactive --tty <container_name> bash
+#
+# interactive mode, remove the container once exiting
+#docker run --interactive --tty --rm --name <container_name> <image_name> bash
+#
+# map the host directory "$(pwd)/ansible_root" (in your PC), 
+# to the directory "ansible" in the image"
+#docker run --rm -it -v $(pwd)/ansible_root:/ansible <image_name> bash
+# 
+# Reference: # https://blog.devgenius.io/docker-a-beginners-guide-to-\
+#understanding-dockerfile-with-a-sample-project-f1a54eeedb0f
+
+
+
+# ARG is used to pass some arguments to consecutive instructions
+# this is only command other than a comment can be used before FROM. 
+ARG ALPINE_VERSION=3.17
+
+
+### BASE OS
+FROM alpine:${ALPINE_VERSION}
+
+
+# BUG!, Has to be repeated after the FROM statement for the ENV to be 
+# able to pick it up
+ARG ALPINE_VERSION=3.17
+ARG ANSIBLE_CORE_VERSION=2.15.0
+#ARG ANSIBLE_COMMUNITY_VERSION=8.0.0
+ARG ANSIBLE_LINT=6.17.1
+ARG DOCKERFILE_MAINTAINER="daniel.lete@heanet.ie"
+ARG DOCKERFILE_DATE="20 June 2023"
+
+
+# ENV sets the environment variables for subsequent instructions.
+ENV ALPINE_VERSION ${ALPINE_VERSION}
+ENV ANSIBLE_CORE_VERSION ${ANSIBLE_CORE_VERSION}
+#ENV ANSIBLE_COMMUNITY_VERSION ${ANSIBLE_COMMUNITY_VERSION}
+ENV ANSIBLE_LINT ${ANSIBLE_LINT}
+ENV DOCKERFILE_MAINTAINERMAINTAINER=${DOCKERFILE_MAINTAINER}
+ENV DOCKERFILE_VERSION=${DOCKERFILE_DATE}
+ENV DOCKERFILE_DESCRIPTION="Custom Docker image with with \
+    Alpine ${ALPINE_VERSION} and Ansible Core ${ANSIBLE_CORE_VERSION}"
+
+
+# LABEL you will see the labels in the image and in the containers
+# docker inspect <image_name>|<container-id>
+LABEL maintainer=${DOCKERFILE_MAINTAINER}
+LABEL version=${DOCKERFILE_DATE}
+LABEL description=${DOCKERFILE_DESCRIPTION}
+LABEL DOCKERFILE_MAINTAINERMAINTAINER=${DOCKERFILE_MAINTAINER}
+LABEL DOCKERFILE_VERSION=${DOCKERFILE_DATE}
+LABEL DOCKERFILE_DESCRIPTION=${DOCKERFILE_DESCRIPTION}
+
+
+### OS PACKAGES
+RUN apk --no-cache add \
+        sudo \
+        python3 \
+        py3-pip \
+        openssl \
+        ca-certificates \
+        sshpass \
+        openssh-client \
+        rsync \
+        # add bash, so that you can then run containers and use bash in the CLI
+        # https://stackoverflow.com/questions/40944479/docker-how-to-use-bash-\
+        #with-an-alpine-based-docker-image
+        # docker run --rm -it <image_name> bash
+        bash \
+        # to be able to use 'locate'
+        #findutils-locate \
+        git && \
+    apk --no-cache add --virtual build-dependencies \
+        python3-dev \
+        libffi-dev \
+        musl-dev \
+        gcc \
+        cargo \
+        openssl-dev \
+        #libressl-dev \
+        build-base && \
+    ### PYTHON PACKAGES LAYER
+    pip3 install --upgrade pip wheel && \
+    pip3 install --upgrade cryptography cffi && \
+    pip3 install ansible-core==${ANSIBLE_CORE_VERSION} && \
+    #pip3 install ansible==${ANSIBLE_COMMUNITY_VERSION} && \
+    pip3 install --ignore-installed ansible-lint==${ANSIBLE_LINT} && \
+    pip3 install mitogen jmespath && \
+    pip3 install --upgrade pywinrm && \
+    apk del build-dependencies && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /root/.cache/pip && \
+    rm -rf /root/.cargo
+
+
+### SOURCE CODE AND POST INSTALLATION
+RUN mkdir /ansible && \
+    mkdir -p /etc/ansible && \
+    echo 'localhost' > /etc/ansible/hosts
+
+
+WORKDIR /ansible
+
+
+CMD [ "ansible-playbook", "--version" ]

@@ -1,0 +1,8 @@
+all:
+  children:
+    ceos:
+      hosts:
+        clab-my_srlceos01-ceos1:
+          ansible_host: 172.20.20.3
+        clab-my_srlceos01-ceos2:
+          ansible_host: 172.20.20.2

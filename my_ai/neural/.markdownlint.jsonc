@@ -1,0 +1,7 @@
+{
+    /* this is comment */
+    // this is also a comment
+    "MD002": false,      // first-heading-h1
+    "MD006": false,      // ul-start-left
+    "MD013": false       // line-lenght
+}

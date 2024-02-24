@@ -1,0 +1,74 @@
+version: '3.8'
+# ansible_server_and_aristas_01
+# https://kevin-wang-xin.medium.com/how-to-use-arista-ceos-to-build-a-topology-to-test-features-49d316110b98
+
+services:
+  my_ans:
+    #image: dl_image_02
+    image: my_alpine_ansible_image
+    volumes:
+      # https://docs.divio.com/en/latest/reference/docker-docker-compose/#:~:text=When%20you%20execute%20a%20docker,overwritten%20by%20the%20mounted%20path.
+      - .:/ansible:rw
+      # PENDING: map ansible_root/hosts to /etc/ansible/hosts
+    networks:
+      - oob
+    #### BEGIN, IF YOU WANT TO LEAVE THE SERVER RUNNNING
+    # https://stackoverflow.com/questions/42593396/docker-compose-up-is-starting-the-container-and-immediately-stopping-them
+    command: bash
+    tty: true
+    # here they say to add stdin_open, but there is no need. https://github.com/docker/compose/issues/5016
+    #stdin_open: true
+    #### BEGIN, IF YOU WANT TO LEAVE THE SERVER RUNNNING
+
+  ceos-1:
+    hostname: CEOS-1
+    image: 'ceosimage:4.29.3M'
+    command: /sbin/init systemd.setenv=INTFTYPE=eth systemd.setenv=ETBA=4 systemd.setenv=SKIP_ZEROTOUCH_BARRIER_IN_SYSDBINIT=1 systemd.setenv=CEOS=1 systemd.setenv=EOS_PLATFORM=ceoslab systemd.setenv=container=docker systemd.setenv=MAPETH0=1 systemd.setenv=MGMT_INTF=eth0
+    privileged: true
+    environment:
+      container: docker
+      CEOS: 1
+      EOS_PLATFORM: ceoslab
+      SKIP_ZEROTOUCH_BARRIER_IN_SYSDBINIT: 1
+      ETBA: 4
+      INTFTYPE: eth
+      MGMT_INTF: eth0
+      MAPETH0: 1
+    #volumes:
+    #  - type: bind
+    #    source: ./01
+    #    target: /mnt/flash
+        #source: ./01/startup-config
+        #target: /mnt/flash/startup-config
+    #    read_only: false
+
+
+    networks:
+      - oob
+      - r1r2
+
+  ceos-2:
+    hostname: CEOS-2
+    image: 'ceosimage:4.29.3M'
+    command: /sbin/init systemd.setenv=INTFTYPE=eth systemd.setenv=ETBA=4 systemd.setenv=SKIP_ZEROTOUCH_BARRIER_IN_SYSDBINIT=1 systemd.setenv=CEOS=1 systemd.setenv=EOS_PLATFORM=ceoslab systemd.setenv=container=docker systemd.setenv=MAPETH0=1 systemd.setenv=MGMT_INTF=eth0
+    privileged: true
+    environment:
+      container: docker
+      CEOS: 1
+      EOS_PLATFORM: ceoslab
+      SKIP_ZEROTOUCH_BARRIER_IN_SYSDBINIT: 1
+      ETBA: 4
+      INTFTYPE: eth
+      MGMT_INTF: eth0
+      MAPETH0: 1
+    networks:
+      - oob
+      - r1r2
+
+networks:
+  oob:
+    name: out_of_band
+    driver: bridge
+  r1r2:
+    name: r1r2
+    driver: bridge

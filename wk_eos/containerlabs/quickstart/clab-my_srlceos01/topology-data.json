@@ -1,0 +1,91 @@
+{
+  "name": "my_srlceos01",
+  "type": "clab",
+  "clab": {
+    "config": {
+      "prefix": "clab",
+      "mgmt": {
+        "network": "clab",
+        "bridge": "br-023d158bb92d",
+        "ipv4-subnet": "172.20.20.0/24",
+        "ipv4-gw": "172.20.20.1",
+        "ipv6-subnet": "2001:172:20:20::/64",
+        "ipv6-gw": "2001:172:20:20::1",
+        "mtu": "1500",
+        "external-access": true
+      }
+    }
+  },
+  "nodes": {
+    "ceos1": {
+      "index": "0",
+      "shortname": "ceos1",
+      "longname": "clab-my_srlceos01-ceos1",
+      "fqdn": "ceos1.my_srlceos01.io",
+      "group": "",
+      "labdir": "/workspace/wk_eos/containerlabs/quickstart/clab-my_srlceos01/ceos1",
+      "kind": "ceos",
+      "image": "arista/ceos:4.29.3M",
+      "mgmt-net": "",
+      "mgmt-intf": "Management0",
+      "mgmt-ipv4-address": "172.20.20.3",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::3",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "00:1c:73:d5:2b:7f",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-023d158bb92d",
+        "clab-node-group": "",
+        "clab-node-kind": "ceos",
+        "clab-node-lab-dir": "/workspace/wk_eos/containerlabs/quickstart/clab-my_srlceos01/ceos1",
+        "clab-node-name": "ceos1",
+        "clab-node-type": "",
+        "clab-topo-file": "/workspace/wk_eos/containerlabs/quickstart/my_srlceos01.clab.yml",
+        "containerlab": "my_srlceos01"
+      }
+    },
+    "ceos2": {
+      "index": "1",
+      "shortname": "ceos2",
+      "longname": "clab-my_srlceos01-ceos2",
+      "fqdn": "ceos2.my_srlceos01.io",
+      "group": "",
+      "labdir": "/workspace/wk_eos/containerlabs/quickstart/clab-my_srlceos01/ceos2",
+      "kind": "ceos",
+      "image": "arista/ceos:4.29.3M",
+      "mgmt-net": "",
+      "mgmt-intf": "Management0",
+      "mgmt-ipv4-address": "172.20.20.2",
+      "mgmt-ipv4-prefix-length": 24,
+      "mgmt-ipv6-address": "2001:172:20:20::2",
+      "mgmt-ipv6-prefix-length": 64,
+      "mac-address": "00:1c:73:b6:ea:60",
+      "labels": {
+        "clab-mgmt-net-bridge": "br-023d158bb92d",
+        "clab-node-group": "",
+        "clab-node-kind": "ceos",
+        "clab-node-lab-dir": "/workspace/wk_eos/containerlabs/quickstart/clab-my_srlceos01/ceos2",
+        "clab-node-name": "ceos2",
+        "clab-node-type": "",
+        "clab-topo-file": "/workspace/wk_eos/containerlabs/quickstart/my_srlceos01.clab.yml",
+        "containerlab": "my_srlceos01"
+      }
+    }
+  },
+  "links": [
+    {
+      "a": {
+        "node": "ceos1",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:f6:68:7a",
+        "peer": "z"
+      },
+      "z": {
+        "node": "ceos2",
+        "interface": "eth1",
+        "mac": "aa:c1:ab:0c:7e:ec",
+        "peer": "a"
+      }
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+wheel
+numexpr
+qiskit
+qiskit[visualization]
+qiskit-experiments

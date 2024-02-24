@@ -1,0 +1,6 @@
+flake8
+jupyter
+matplotlib
+numpy
+scikit-learn
+seaborn
